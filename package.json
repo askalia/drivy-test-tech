@@ -1,0 +1,19 @@
+{
+  "name": "level1",
+  "version": "1.0.0",
+  "description": "We are building a peer-to-peer car rental service. Let's call it Drivy :)",
+  "main": "main.js",
+  "dependencies": {
+    "moment": "^2.24.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  },
+  "scripts": {
+    "autorun" : "nodemon main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
