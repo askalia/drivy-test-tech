@@ -14,6 +14,7 @@ class Level {
     }
     retrieveData(filePath) {
         if (!fs.existsSync(filePath)) {
+            console.log('F : ', filePath)
             throw new Error(`Path ${filePath} does not exist`);
         }
         this._data = JSON.parse(require('fs').readFileSync(filePath))
@@ -70,11 +71,15 @@ class Level {
         });
         return this._report;
     }
-    saveReport(outputFilePath, realm = null) {
+    
+    saveReport(outputFilePath, realm = null, callback = null) {
+        const reportData = realm === null ? this.getRentalsReport() : { [realm] : this.getRentalsReport() };
         fs.writeFile(
             normalize(outputFilePath),
-            JSON.stringify(realm === null ? this.getRentalsReport() : { [realm] : this.getRentalsReport() }, null, 4),
-            () => console.log(`File written in ${outputFilePath}`)
+            JSON.stringify(reportData, null, 4),
+            () => {
+                typeof callback === 'function' && callback({ message: `File written in ${outputFilePath}` });
+            }
         );
     }
 }

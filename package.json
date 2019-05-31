@@ -8,11 +8,13 @@
     "percent-value": "^1.0.8"
   },
   "devDependencies": {
+    "jasmine": "^3.4.0",
+    "jasmine-console-reporter": "^3.1.0",
     "nodemon": "^1.19.1"
   },
   "scripts": {
     "autorun": "nodemon main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine ./level*/**/*-spec.js --reporter=jasmine-console-reporter"
   },
   "keywords": [],
   "author": "",

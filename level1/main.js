@@ -1,4 +1,4 @@
 
-const Level = require('../core/level.js');
+const Level1 = require('./level1.js');
 
-new Level({ dataPath: './data/input.json' }).saveReport('./data/output.json', 'rentals');
+new Level1({ dataPath: './data/input.json' }).saveReport('./data/output.json', 'rentals');
