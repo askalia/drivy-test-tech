@@ -63,17 +63,17 @@ class Level {
                     this._report = [
                         ...this._report,
                         reportEntry
-                    ]
+                    ];
                 }
                 reportEntry.price += this.computePrice(rental, car);
             }
         });
         return this._report;
     }
-    saveReport(outputFilePath) {
+    saveReport(outputFilePath, realm = null) {
         fs.writeFile(
             normalize(outputFilePath),
-            JSON.stringify(this.getRentalsReport(), null, 4),
+            JSON.stringify(realm === null ? this.getRentalsReport() : { [realm] : this.getRentalsReport() }, null, 4),
             () => console.log(`File written in ${outputFilePath}`)
         );
     }
