@@ -48,12 +48,9 @@ class Level5 extends Level4 {
             .filter(option => option.rental_id === rentalId)
             .map(option => option.type)
     }
-    
-    getRentalsReport() {
-        // we get and override the report so as to append 'commission' child object
-        return super.getRentalsReport()
-        .map(reportEntry => {
-            const rental = this.findRentalById(reportEntry.id)
+
+    debitOrCreditStakeholders(reportEntry){
+        const rental = this.findRentalById(reportEntry.id)
             const rentalDuration = this.getRentalDuration(rental);
             reportEntry.options = this.findRentalOptions(rental.id);
             
@@ -68,7 +65,12 @@ class Level5 extends Level4 {
                 
             })
             return reportEntry;
-        })        
+    }
+    
+    getRentalsReport() {
+        // we get and override the report so as to append stakeholders to 'debit or credit'
+        return super.getRentalsReport()
+                    .map(this.debitOrCreditStakeholders.bind(this))
     }
 }
 
