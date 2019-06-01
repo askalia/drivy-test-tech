@@ -5,11 +5,15 @@ class Level4 extends Level3 {
 
     constructor(options){
         super(options);
+        this._actionsRules = this.loadActionsRules();        
+    }
 
-        this.OWNER_GAIN = 70;
-        this.INSURANCE_RATE = 50;
-
-        this._actionsRules = {
+    loadActionsRules(){
+        const OWNER_GAIN = 70;
+        const INSURANCE_RATE = 50;
+        return {
+            'OWNER_GAIN' : () => OWNER_GAIN,
+            'INSURANCE_RATE' : () => INSURANCE_RATE,
             'driver' : (reportEntry) => {
                 return {
                     who: 'driver',
@@ -21,15 +25,15 @@ class Level4 extends Level3 {
                 return {
                     who: 'owner',
                     type: 'credit',
-                    amount : reportEntry.price - percent(100 - this.OWNER_GAIN).from(reportEntry.price)
+                    amount : reportEntry.price - percent(100 - OWNER_GAIN).from(reportEntry.price)
                 }
             },
             'insurance' : (reportEntry) => {
-                const commission = percent(100 - this.OWNER_GAIN).from(reportEntry.price);
+                const commission = percent(100 - OWNER_GAIN).from(reportEntry.price);
                 return {
                     who: 'insurance',
                     type: 'credit',
-                    amount : commission - Math.ceil(percent(this.INSURANCE_RATE).from(commission))
+                    amount : commission - Math.ceil(percent(INSURANCE_RATE).from(commission))
                     
                 }
             },
@@ -52,7 +56,7 @@ class Level4 extends Level3 {
                     }, commission)                    
                 }
             }
-        };        
+        };
     }
 
     findActionByWho(actions){
@@ -80,16 +84,15 @@ class Level4 extends Level3 {
         }
 
         const _dispatchTransactionsDetailToStakeHolders = (baseCommission) => {
+            const commission = percent(100 - this.getActionsRules('OWNER_GAIN')() ).from(reportEntry.price);
+            let actions = [
+                this.getActionsRules('driver')(reportEntry),
+                this.getActionsRules('owner')(reportEntry),
+                this.getActionsRules('insurance')(reportEntry),
+                this.getActionsRules('assistance')(reportEntry, this.getRentalDuration(rental)),
+            ];
+            actions.push(this.getActionsRules('drivy')(commission, this.findActionByWho(actions)))
             
-            const commission = percent(100 - this.OWNER_GAIN).from(reportEntry.price);
-            let actions = [];
-            
-            actions.push(this.getActionsRules('driver')(reportEntry));
-            actions.push(this.getActionsRules('owner')(reportEntry));
-            actions.push(this.getActionsRules('insurance')(reportEntry));
-            actions.push(this.getActionsRules('assistance')(reportEntry, this.getRentalDuration(rental))); 
-            actions.push(this.getActionsRules('drivy')(commission, this.findActionByWho(actions)));
-
             return actions;
         }
         reportEntry.actions = _dispatchTransactionsDetailToStakeHolders(_getBaseCommissionOnRevenue(reportEntry));
