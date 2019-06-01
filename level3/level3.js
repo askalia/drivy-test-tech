@@ -27,10 +27,6 @@ class Level3 extends Level2 {
         return key !== null ? this._dispatchingRules[key] : this._dispatchingRules;
     }
 
-    findRentalById(id) {
-        return this.getRentals().find(rental => rental.id === id);
-    }
-
     appendCommissioningToReportEntry(reportEntry, rental){
         const _getBaseCommissionOnRevenue = (reportEntry) => {
             const FEE_COMMISSION = 30;
@@ -38,17 +34,17 @@ class Level3 extends Level2 {
         }
 
         const _dispatchCommissionToStakeHolders = (baseCommission) => {
-            let dispatchStruct = {};
+            let commissionStruct = {};
             Object
                 .entries(this.getDispatchingRules())
                 .reduce((overallCommission, [stakeHolder, gainRule]) => {
-                    dispatchStruct[stakeHolder] = (typeof gainRule === 'function' && gainRule(overallCommission, this.getRentalDuration(rental))) || 0;
+                    commissionStruct[stakeHolder] = (typeof gainRule === 'function' && gainRule(overallCommission, this.getRentalDuration(rental))) || 0;
                     // Below, we could alternatively consider that gainRule is also responsible for subtracting the calculated gain from overallCommission
-                    overallCommission -= dispatchStruct[stakeHolder];
+                    overallCommission -= commissionStruct[stakeHolder];
                     return overallCommission;
                 }, baseCommission);
             
-            return dispatchStruct;
+            return commissionStruct;
         }
         reportEntry.commission = _dispatchCommissionToStakeHolders(_getBaseCommissionOnRevenue(reportEntry));
         return reportEntry;

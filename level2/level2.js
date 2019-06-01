@@ -1,5 +1,7 @@
 const Level = require("../core/level");
 const moment = require("moment");
+moment.suppressDeprecationWarnings = true;
+
 const percent = require("percent-value");
 
 class Level2 extends Level {

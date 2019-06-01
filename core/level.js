@@ -40,6 +40,10 @@ class Level {
         return this._report.find(entry => entry.id === id);
     }
 
+    findRentalById(id) {
+        return this.getRentals().find(rental => rental.id === id);
+    }
+
     getRentalsReport() {
         this.getRentals().forEach((rental) => {
             const car = this.findCarById(rental.car_id);
