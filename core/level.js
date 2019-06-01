@@ -12,7 +12,6 @@ class Level {
     }
     retrieveData(filePath) {
         if (!fs.existsSync(filePath)) {
-            console.log('F : ', filePath)
             throw new Error(`Path ${filePath} does not exist`);
         }
         this._data = JSON.parse(require('fs').readFileSync(filePath))
@@ -26,7 +25,7 @@ class Level {
     }
 
     computePrice(rental, car) {
-        throw new Error('This method must be overriden');
+        throw new Error('computePrice(): This method must be overriden');
     }
 
     findCarById(id) {
