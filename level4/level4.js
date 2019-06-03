@@ -5,15 +5,19 @@ class Level4 extends Level3 {
 
     constructor(options){
         super(options);
-        this._actionsRules = this.loadActionsRules();        
+        this._actionsRulesRates = this.loadActionsRulesRates();
+        this._actionsRules = this.loadActionsRules();                
+    }
+
+    loadActionsRulesRates(){
+        return {
+            OWNER_RATE : 70, // %
+            INSURANCE_RATE : 50 // %
+        };
     }
 
     loadActionsRules(){
-        const OWNER_GAIN = 70;
-        const INSURANCE_RATE = 50;
         return {
-            'OWNER_GAIN' : () => OWNER_GAIN,
-            'INSURANCE_RATE' : () => INSURANCE_RATE,
             'driver' : (reportEntry) => {
                 return {
                     who: 'driver',
@@ -25,15 +29,15 @@ class Level4 extends Level3 {
                 return {
                     who: 'owner',
                     type: 'credit',
-                    amount : reportEntry.price - percent(100 - OWNER_GAIN).from(reportEntry.price)
+                    amount : reportEntry.price - percent(100 - this._actionsRulesRates.OWNER_RATE).from(reportEntry.price)
                 }
             },
             'insurance' : (reportEntry) => {
-                const commission = percent(100 - OWNER_GAIN).from(reportEntry.price);
+                const commission = percent(100 - this._actionsRulesRates.OWNER_RATE).from(reportEntry.price);
                 return {
                     who: 'insurance',
                     type: 'credit',
-                    amount : commission - Math.ceil(percent(INSURANCE_RATE).from(commission))
+                    amount : commission - Math.ceil(percent(this._actionsRulesRates.INSURANCE_RATE).from(commission))
                     
                 }
             },
@@ -77,37 +81,28 @@ class Level4 extends Level3 {
         }        
     }
     
-    appendTransactionsDetailToReportEntry(reportEntry, rental){
-        const _getBaseCommissionOnRevenue = (reportEntry) => {
-            const FEE_COMMISSION = 30;
-            return percent(FEE_COMMISSION).from(reportEntry.price);
-        }
-
-        const _dispatchTransactionsDetailToStakeHolders = (baseCommission) => {
-            const commission = percent(100 - this.getActionsRules('OWNER_GAIN')() ).from(reportEntry.price);
-            let actions = [
+    allocateCommissionsToStakeholders(reportEntry, rental){
+        
+        reportEntry.actions = [
                 this.getActionsRules('driver')(reportEntry),
                 this.getActionsRules('owner')(reportEntry),
                 this.getActionsRules('insurance')(reportEntry),
                 this.getActionsRules('assistance')(reportEntry, this.getRentalDuration(rental)),
-            ];
-            actions.push(this.getActionsRules('drivy')(commission, this.findActionByWho(actions)))
-            
-            return actions;
-        }
-        reportEntry.actions = _dispatchTransactionsDetailToStakeHolders(_getBaseCommissionOnRevenue(reportEntry));
-        return reportEntry;
+        ];
+        const baseCommission = percent(100 - this._actionsRulesRates.OWNER_RATE ).from(reportEntry.price);
+        reportEntry.actions.push(
+            this.getActionsRules('drivy')(baseCommission, this.findActionByWho(reportEntry.actions))
+        )
+        const { price, commission, ..._reportEntry } = reportEntry;
+        return _reportEntry;
     }
-    
 
     getRentalsReport() {
         // we get and override the report so as to append 'commission' child object
         return super.getRentalsReport()
-        .map((reportEntry) => {
-            this.appendTransactionsDetailToReportEntry(reportEntry, this.findRentalById(reportEntry.id))
-            const { price, commission, ..._reportEntry } = reportEntry;
-            return _reportEntry;
-        });        
+                    .map((reportEntry) => {            
+                        return this.allocateCommissionsToStakeholders(reportEntry, this.findRentalById(reportEntry.id));                        
+                    });        
     }
 }
 

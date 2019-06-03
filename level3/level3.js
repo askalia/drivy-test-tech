@@ -7,7 +7,11 @@ class Level3 extends Level2 {
   
     constructor(options){
         super(options);
-        this._dispatchingRules = {
+        this._dispatchingRules = this.loadDispatchingRules()
+    }
+    
+    loadDispatchingRules(){
+        return {
             'insurance_fee' : (amount) => {
                 const FEE_RATE = 50; // %
                 return Math.ceil(percent(FEE_RATE).from(amount));

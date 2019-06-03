@@ -5,8 +5,11 @@ class Level5 extends Level4 {
 
     constructor(options){
         super(options);
-
-        this._optionsRules = {
+        this._optionsRules = this.loadOptionsRules()
+    }
+    
+    loadOptionsRules(){
+        return {
             'gps' : (rentalDuration) => { 
                 const FEES_PER_DAY = 5; // €
                 return {
@@ -52,17 +55,20 @@ class Level5 extends Level4 {
     debitOrCreditStakeholders(reportEntry){
         const rental = this.findRentalById(reportEntry.id)
             const rentalDuration = this.getRentalDuration(rental);
+            // a new prop 'options' to be displayed as a summary in the outputedreport
             reportEntry.options = this.findRentalOptions(rental.id);
             
             reportEntry.options.forEach(optionType => {
+
                 const optionMetadata = this.getOptionsRules(optionType)(rentalDuration);
                 const driverAction = reportEntry.actions.find(action => action.who === 'driver');
                 optionMetadata.payee.forEach(payeeName => {    
+                    // driver is charged for every given cost
                     driverAction.amount += optionMetadata.cost; 
+                    // point out the payee to credit the cost on
                     const payee = reportEntry.actions.find(action => action.who === payeeName);
                     payee.amount += optionMetadata.cost;                     
-                })
-                
+                })  
             })
             return reportEntry;
     }
