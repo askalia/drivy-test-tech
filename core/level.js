@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { normalize } = require('path');
+const path = require('path');
 
 class Level {
 
@@ -62,14 +62,13 @@ class Level {
         return this._report;
     }
 
-    saveReport(outputFilePath, realm = null, callback = null) {
+    saveReport(outputFilePath, realm = null) {
         const reportData = realm === null ? this.getRentalsReport() : { [realm] : this.getRentalsReport() };
-        fs.writeFile(
-            normalize(outputFilePath),
-            JSON.stringify(reportData, null, 4),
-            () => {
-                typeof callback === 'function' && callback({ message: `File written in ${outputFilePath}` });
-            }
+        const folderPath = path.parse(outputFilePath).dir; 
+        !fs.existsSync(folderPath) && fs.mkdirSync(folderPath);
+        fs.writeFileSync(
+            path.normalize(outputFilePath),
+            JSON.stringify(reportData, null, 4)                        
         );
     }
 }

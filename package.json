@@ -5,7 +5,8 @@
   "main": "main.js",
   "dependencies": {
     "moment": "^2.24.0",
-    "percent-value": "^1.0.8"
+    "percent-value": "^1.0.8",
+    "rimraf": "^2.6.3"
   },
   "devDependencies": {
     "jasmine": "^3.4.0",
