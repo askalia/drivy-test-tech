@@ -62,7 +62,7 @@ class Level {
         return this._report;
     }
 
-    saveReport(outputFilePath, realm = null) {
+    saveReport(outputFilePath, realm = null, callback = null) {
         const reportData = realm === null ? this.getRentalsReport() : { [realm] : this.getRentalsReport() };
         const folderPath = path.parse(outputFilePath).dir; 
         !fs.existsSync(folderPath) && fs.mkdirSync(folderPath);
@@ -70,6 +70,8 @@ class Level {
             path.normalize(outputFilePath),
             JSON.stringify(reportData, null, 4)                        
         );
+        callback({ message: `File written in ${outputFilePath}` });
+        
     }
 }
 
