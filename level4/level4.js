@@ -6,62 +6,13 @@ export class Level4 extends Level3 {
 
     constructor(options){
         super(options);
-        this._actionsRulesRates = this.loadActionsRulesRates();
-        this._actionsRules = this.loadActionsRules();                
+        const { rules, rates } = this._loadActionsRulesAndRates();
+        this._actionsRules = rules;
+        this._actionsRulesRates = rates;
     }
 
-    loadActionsRulesRates(){
-        return {
-            OWNER_RATE : 70, // %
-            INSURANCE_RATE : 50 // %
-        };
-    }
-
-    loadActionsRules(){
-        return {
-            'driver' : (reportEntry) => {
-                return {
-                    who: 'driver',
-                    type: 'debit',
-                    amount : reportEntry.price
-                }
-            },
-            'owner' : (reportEntry) => {
-                return {
-                    who: 'owner',
-                    type: 'credit',
-                    amount : reportEntry.price - percent(100 - this._actionsRulesRates.OWNER_RATE).from(reportEntry.price)
-                }
-            },
-            'insurance' : (reportEntry) => {
-                const commission = percent(100 - this._actionsRulesRates.OWNER_RATE).from(reportEntry.price);
-                return {
-                    who: 'insurance',
-                    type: 'credit',
-                    amount : commission - Math.ceil(percent(this._actionsRulesRates.INSURANCE_RATE).from(commission))
-                    
-                }
-            },
-            'assistance' : (reportEntry, rentalDuration) => {
-                const FEE_PER_DAY  = 100; // c/€ per day;
-                return {
-                    who: 'assistance',
-                    type: 'credit',
-                    amount: (rentalDuration * FEE_PER_DAY)
-                }
-            },
-            'drivy' : (commission, actionFinder) => {                
-                const whoSubstrac = ['insurance', 'assistance'];
-                return {
-                    who: 'drivy',
-                    type: 'credit',
-                    amount: whoSubstrac.reduce((decAmount, who) => {
-                        decAmount -= actionFinder(who).amount;
-                        return decAmount;
-                    }, commission)                    
-                }
-            }
-        };
+    _loadActionsRulesAndRates(){
+        return require('./lib/actions-rules.lib');
     }
 
     getActionRule(key){

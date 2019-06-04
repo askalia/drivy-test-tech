@@ -5,40 +5,17 @@ export class Level5 extends Level4 {
 
     constructor(options){
         super(options);
-        this._optionsRules = this.loadOptionsRules()
+        this._optionsRules = this._loadOptionsRules()
     }
     
-    loadOptionsRules(){
-        return {
-            'gps' : (rentalDuration) => { 
-                const FEES_PER_DAY = 5; // €
-                return {
-                    payee: ['owner'],
-                    cost: rentalDuration * (FEES_PER_DAY * 100) // fees as c/€
-                };
-             },
-            'baby_seat' : (rentalDuration) => { 
-                const FEES_PER_DAY = 2; // €
-                return {
-                    payee: ['owner'],
-                    cost: rentalDuration * (FEES_PER_DAY * 100) // fees as c/€
-                };
-             },
-            'additional_insurance' : (rentalDuration) => { 
-                const FEES_PER_DAY = 10; // €
-                return {
-                    payee: ['drivy'],
-                    cost: rentalDuration * (FEES_PER_DAY *100) // fees as c/€
-                }                
-            }
-        };
+    _loadOptionsRules(){
+        return require('./lib/options-rules.lib').default;
     }
 
     getOptionRule(key){
         const EMPTY_RULE = () => ({ payee : [], cost: 0 }); 
         return this._optionsRules[key] || EMPTY_RULE;
     }
-
 
     debitOrCreditStakeholders(reportEntry){
         const rental = this._rentalFlowService.findRentalById(reportEntry.id)

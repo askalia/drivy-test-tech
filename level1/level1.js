@@ -1,19 +1,17 @@
 const { Level } = require('../core/level.js');
 
 export class Level1 extends Level {
+
+    constructor(options){
+        super(options)        
+    }
+
     computePrice(rental, car) {
-        const operations = [
-            function computeTimeAspect(rental) {
-                return rental.duration * car.price_per_day;
-            },
-            function computeDistanceAspect(rental, car) { 
-                return rental.distance * car.price_per_km
-            }
-        ];
-        return operations.reduce((totalPrice, op) => {
-            totalPrice += op(rental, car);
-            return totalPrice;
-        }, 0);
+        return this._loadOperations(__dirname)
+            .reduce((totalPrice, operation) => {
+                totalPrice += operation(rental, car);
+                return totalPrice;
+            }, 0);
 
     }
 }

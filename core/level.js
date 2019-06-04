@@ -15,8 +15,16 @@ export class Level {
         throw new Error('computePrice(): This method must be overriden');
     }
 
+    _loadOperations(basePath, libFile = 'operations.lib'){
+        if (this.constructor.name === Level.class){
+            throw new Error('_loadOperations(): This method must be overriden');
+        }
+        const usePath = path.join(basePath, 'lib', libFile);
+        return Object.entries(require(usePath))
+                .map(([_, operation]) => operation.bind(this));
+    }
+
     getRentalsReport() {
-        const lev = 'Level2';
         this._rentalFlowService.getRentals().forEach((rental) => {
             const car = this._rentalFlowService.findCarById(rental.car_id);
             let reportEntry = this._report.findEntryById(rental.id);

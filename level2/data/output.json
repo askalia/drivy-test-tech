@@ -2,18 +2,15 @@
     "rentals": [
         {
             "id": 1,
-            "price": 3000,
-            "_actions": []
+            "price": 3000
         },
         {
             "id": 2,
-            "price": 6800,
-            "_actions": []
+            "price": 6800
         },
         {
             "id": 3,
-            "price": 27800,
-            "_actions": []
+            "price": 27800
         }
     ]
 }
