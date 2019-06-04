@@ -19,14 +19,6 @@ class Level2 extends Level {
     };
   }
 
-  getRentalDuration(rental) {
-    return (
-      moment(rental.end_date)
-        .endOf("day")
-        .diff(moment(rental.start_date).startOf("day"), "days") + 1
-    );
-  }
-
   computePrice(rental, car) {
     const operations = [
       function computeTimeAspect(rental) {
@@ -53,7 +45,7 @@ class Level2 extends Level {
                             return accPrice;
                         }, 0);
         }
-        return _mapSlicedDurationsWithApplicableRate(_groupDurationsByTreshold(this.getRentalDuration(rental)));
+        return _mapSlicedDurationsWithApplicableRate(_groupDurationsByTreshold(rental.duration));
       },
 
       function computeDistanceAspect(rental, car) {

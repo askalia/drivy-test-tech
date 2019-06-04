@@ -1,5 +1,6 @@
 const percent = require('percent-value');
 const Level3 = require('../level3/level3');
+const { ReportEntry } = require('../core/models');
 
 class Level4 extends Level3 {
 
@@ -84,11 +85,12 @@ class Level4 extends Level3 {
     allocateCommissionsToStakeholders(reportEntry, rental){
         
         reportEntry.actions = [
-                this.getActionsRules('driver')(reportEntry),
-                this.getActionsRules('owner')(reportEntry),
-                this.getActionsRules('insurance')(reportEntry),
-                this.getActionsRules('assistance')(reportEntry, this.getRentalDuration(rental)),
+            this.getActionsRules('driver')(reportEntry),
+            this.getActionsRules('owner')(reportEntry),
+            this.getActionsRules('insurance')(reportEntry),
+            this.getActionsRules('assistance')(reportEntry, this.getRentalDuration(rental)),
         ];
+        
         const baseCommission = percent(100 - this._actionsRulesRates.OWNER_RATE ).from(reportEntry.price);
         reportEntry.actions.push(
             this.getActionsRules('drivy')(baseCommission, this.findActionByWho(reportEntry.actions))
@@ -101,7 +103,7 @@ class Level4 extends Level3 {
         // we get and override the report so as to append 'commission' child object
         return super.getRentalsReport()
                     .map((reportEntry) => {            
-                        return this.allocateCommissionsToStakeholders(reportEntry, this.findRentalById(reportEntry.id));                        
+                        return this.allocateCommissionsToStakeholders(reportEntry, this._rentalFlowService.findRentalById(reportEntry.id));                        
                     });        
     }
 }

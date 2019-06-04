@@ -46,17 +46,13 @@ class Level5 extends Level4 {
         return this._optionsRules[key] || EMPTY_RULE;
     }
 
-    findRentalOptions(rentalId){
-        return (this._data.options || [])
-            .filter(option => option.rental_id === rentalId)
-            .map(option => option.type)
-    }
 
     debitOrCreditStakeholders(reportEntry){
-        const rental = this.findRentalById(reportEntry.id)
-            const rentalDuration = this.getRentalDuration(rental);
+        const rental = this._rentalFlowService.findRentalById(reportEntry.id)
+        
+            const rentalDuration = rental.duration;
             // a new prop 'options' to be displayed as a summary in the outputedreport
-            reportEntry.options = this.findRentalOptions(rental.id);
+            reportEntry.options = rental.options;
             
             reportEntry.options.forEach(optionType => {
 

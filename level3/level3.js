@@ -58,7 +58,7 @@ class Level3 extends Level2 {
         // we get and override the report so as to append 'commission' child object
         return super.getRentalsReport()
         .map((reportEntry) => {
-            return this.appendCommissioningToReportEntry(reportEntry, this.findRentalById(reportEntry.id))
+            return this.appendCommissioningToReportEntry(reportEntry, this._rentalFlowService.findRentalById(reportEntry.id))
         });        
     }
 }

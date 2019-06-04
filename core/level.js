@@ -1,65 +1,35 @@
 const fs = require('fs');
 const path = require('path');
+const { RentalFlowService } = require('./services');
+const { Report, ReportEntry } = require('./models');
 
 class Level {
 
     constructor (options = { dataPath: '' }) {
-        this._data = [];
-        this._report = [];
-        this._options = options;
-        this.retrieveData(this._options.dataPath);
-
+        this._rentalFlowService = RentalFlowService.getInstance(options.dataPath);
+        this._report = new Report();
+        this._options = options;        
     }
-    retrieveData(filePath) {
-        if (!fs.existsSync(filePath)) {
-            throw new Error(`Path ${filePath} does not exist`);
-        }
-        this._data = JSON.parse(require('fs').readFileSync(filePath))
-    }
-
-    getRentals() {
-        return this._data.rentals || [];
-    }
-    getCars() {
-        return this._data.cars || [];
-    }
-
+    
     computePrice(rental, car) {
         throw new Error('computePrice(): This method must be overriden');
     }
 
-    findCarById(id) {
-        return this.getCars().find(car => car.id === id);
-    }
-
-    createReportEntry(id, price) {
-        return { id, price };
-    }
-
-    findReportEntry(id) {
-        return this._report.find(entry => entry.id === id);
-    }
-
-    findRentalById(id) {
-        return this.getRentals().find(rental => rental.id === id);
-    }
-
     getRentalsReport() {
-        this.getRentals().forEach((rental) => {
-            const car = this.findCarById(rental.car_id);
-            let reportEntry = this.findReportEntry(rental.id);
+        this._rentalFlowService.getRentals().forEach((rental) => {
+            const car = this._rentalFlowService.findCarById(rental.car_id);
+            let reportEntry = this._report.findEntryById(rental.id);
+            //console.log('reportEntry : ', reportEntry)
             if (car !== undefined) {
                 if (reportEntry === undefined) {
-                    reportEntry = this.createReportEntry(rental.id, 0);
-                    this._report = [
-                        ...this._report,
-                        reportEntry
-                    ];
+                    reportEntry = ReportEntry.from(rental.id, 0);
+                    this._report.addEntry(reportEntry);                    
                 }
-                reportEntry.price += this.computePrice(rental, car);
+                reportEntry.price = this.computePrice(rental, car);                
             }
         });
-        return this._report;
+        
+        return this._report.getReport();
     }
 
     saveReport(outputFilePath, realm = null, callback = null) {
@@ -70,7 +40,7 @@ class Level {
             path.normalize(outputFilePath),
             JSON.stringify(reportData, null, 4)                        
         );
-        callback({ message: `File written in ${outputFilePath}` });
+        typeof callback === 'function' && callback({ message: `File written in ${outputFilePath}` });
         
     }
 }
