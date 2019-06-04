@@ -1,7 +1,7 @@
-const percent = require('percent-value');
-const Level4 = require('../level4/level4');
+const { ReportEntry } = require('../core/models');
+const { Level4 } = require('../level4/level4');
 
-class Level5 extends Level4 {
+export class Level5 extends Level4 {
 
     constructor(options){
         super(options);
@@ -34,14 +34,7 @@ class Level5 extends Level4 {
         };
     }
 
-    createReportEntry(id) {
-        return {
-            ...super.createReportEntry(id, 0),
-            options: []            
-        }        
-    }
-
-    getOptionsRules(key){
+    getOptionRule(key){
         const EMPTY_RULE = () => ({ payee : [], cost: 0 }); 
         return this._optionsRules[key] || EMPTY_RULE;
     }
@@ -50,13 +43,11 @@ class Level5 extends Level4 {
     debitOrCreditStakeholders(reportEntry){
         const rental = this._rentalFlowService.findRentalById(reportEntry.id)
         
-            const rentalDuration = rental.duration;
-            // a new prop 'options' to be displayed as a summary in the outputedreport
-            reportEntry.options = rental.options;
-            
+            const rentalDuration = rental.duration;            
+            ReportEntry.withOptions(reportEntry).options = rental.options;
             reportEntry.options.forEach(optionType => {
 
-                const optionMetadata = this.getOptionsRules(optionType)(rentalDuration);
+                const optionMetadata = this.getOptionRule(optionType)(rentalDuration);
                 const driverAction = reportEntry.actions.find(action => action.who === 'driver');
                 optionMetadata.payee.forEach(payeeName => {    
                     // driver is charged for every given cost
@@ -75,5 +66,3 @@ class Level5 extends Level4 {
                     .map(this.debitOrCreditStakeholders.bind(this))
     }
 }
-
-module.exports = Level5;

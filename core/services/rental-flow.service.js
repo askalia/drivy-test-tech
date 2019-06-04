@@ -6,9 +6,7 @@ const { Rental } = require('../models');
 export class RentalFlowService {
 
     constructor(filePath = ''){
-        if (filePath !== ''){
-            this._data = this.retrieveData(filePath);
-        }
+        this._data = this.retrieveData(filePath);
     }
 
     retrieveData(filePath){
@@ -22,7 +20,7 @@ export class RentalFlowService {
     }
 
     getRentals(){
-        return (this._data.rentals || []).map(rental => Rental.from(rental));
+        return (this._data.rentals || []).map(rental => Rental.from(rental, this));
     }
 
     getCars(){
@@ -40,10 +38,6 @@ export class RentalFlowService {
     findRentalById(id) {
         return this.getRentals().find(rental => rental.id === id);
     }
-    
-    static getInstance(filePath = ''){
-        return RentalFlowService._instance || (RentalFlowService._instance = new RentalFlowService(filePath));
-    } 
 }
 
 RentalFlowService.instance = null;

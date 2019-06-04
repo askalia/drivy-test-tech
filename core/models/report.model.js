@@ -9,7 +9,10 @@ export class Report {
     }
 
     addEntry(entry){
-        this._collection.push(entry);
+        this._collection = [
+            ...this._collection,
+            entry
+        ]
     }
 
     getReport(){

@@ -1,8 +1,8 @@
-const percent = require('percent-value');
-const Level3 = require('../level3/level3');
 const { ReportEntry } = require('../core/models');
+const percent = require('percent-value');
+const { Level3 } = require('../level3/level3');
 
-class Level4 extends Level3 {
+export class Level4 extends Level3 {
 
     constructor(options){
         super(options);
@@ -64,37 +64,27 @@ class Level4 extends Level3 {
         };
     }
 
-    findActionByWho(actions){
-        return (who) => actions.find(action => action.who === who)
-    }
-
-    getActionsRules(key = null){
-        if (key !== null && ! (key in this._actionsRules)){
+    getActionRule(key){
+        if (! (key in this._actionsRules)){
             throw new Error(`Rule '${key}' doest not exist`);
         }
-        return key !== null ? this._actionsRules[key] : this._actionsRules;
+        return this._actionsRules[key];
     }
 
-    createReportEntry(id) {
-        return {
-            ...super.createReportEntry(id, 0),
-            actions: {}
-        }        
-    }
-    
     allocateCommissionsToStakeholders(reportEntry, rental){
         
-        reportEntry.actions = [
-            this.getActionsRules('driver')(reportEntry),
-            this.getActionsRules('owner')(reportEntry),
-            this.getActionsRules('insurance')(reportEntry),
-            this.getActionsRules('assistance')(reportEntry, this.getRentalDuration(rental)),
+        ReportEntry.withActions(reportEntry).actions = [
+            this.getActionRule('driver')(reportEntry),
+            this.getActionRule('owner')(reportEntry),
+            this.getActionRule('insurance')(reportEntry),
+            this.getActionRule('assistance')(reportEntry, rental.duration),
         ];
-        
+
         const baseCommission = percent(100 - this._actionsRulesRates.OWNER_RATE ).from(reportEntry.price);
         reportEntry.actions.push(
-            this.getActionsRules('drivy')(baseCommission, this.findActionByWho(reportEntry.actions))
+            this.getActionRule('drivy')(baseCommission, reportEntry.findActionByWho.bind(reportEntry))
         )
+        // we do not need price nor commission in reportEntry
         const { price, commission, ..._reportEntry } = reportEntry;
         return _reportEntry;
     }
@@ -104,8 +94,6 @@ class Level4 extends Level3 {
         return super.getRentalsReport()
                     .map((reportEntry) => {            
                         return this.allocateCommissionsToStakeholders(reportEntry, this._rentalFlowService.findRentalById(reportEntry.id));                        
-                    });        
+                    });                    
     }
 }
-
-module.exports = Level4;

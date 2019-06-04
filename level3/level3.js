@@ -1,9 +1,10 @@
-const Level2 = require("../level2/level2");
+const { ReportEntry } = require('../core/models');
+const { Level2 } = require("../level2/level2");
 const moment = require("moment");
 moment.suppressDeprecationWarnings = true;
 const percent = require("percent-value");
 
-class Level3 extends Level2 {
+export class Level3 extends Level2 {
   
     constructor(options){
         super(options);
@@ -42,7 +43,7 @@ class Level3 extends Level2 {
             Object
                 .entries(this.getDispatchingRules())
                 .reduce((overallCommission, [stakeHolder, gainRule]) => {
-                    commissionStruct[stakeHolder] = (typeof gainRule === 'function' && gainRule(overallCommission, this.getRentalDuration(rental))) || 0;
+                    commissionStruct[stakeHolder] = (typeof gainRule === 'function' && gainRule(overallCommission, rental.duration)) || 0;
                     // Below, we could alternatively consider that gainRule is also responsible for subtracting the calculated gain from overallCommission
                     overallCommission -= commissionStruct[stakeHolder];
                     return overallCommission;
@@ -50,7 +51,7 @@ class Level3 extends Level2 {
             
             return commissionStruct;
         }
-        reportEntry.commission = _dispatchCommissionToStakeHolders(_getBaseCommissionOnRevenue(reportEntry));
+        ReportEntry.withCommission(reportEntry).commission = _dispatchCommissionToStakeHolders(_getBaseCommissionOnRevenue(reportEntry));
         return reportEntry;
     }
 
@@ -62,5 +63,3 @@ class Level3 extends Level2 {
         });        
     }
 }
-
-module.exports = Level3;

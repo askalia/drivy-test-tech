@@ -1,6 +1,6 @@
-const Level = require('../core/level.js');
+const { Level } = require('../core/level.js');
 
-class Level1 extends Level {
+export class Level1 extends Level {
     computePrice(rental, car) {
         const operations = [
             function computeTimeAspect(rental) {
@@ -17,5 +17,3 @@ class Level1 extends Level {
 
     }
 }
-
-module.exports = Level1;

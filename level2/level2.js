@@ -1,10 +1,10 @@
-const Level = require("../core/level");
+const { Level } = require("../core/level");
 const moment = require("moment");
 moment.suppressDeprecationWarnings = true;
 
 const percent = require("percent-value");
 
-class Level2 extends Level {
+export class Level2 extends Level {
   constructor(options) {
     super(options);
   }
@@ -20,6 +20,7 @@ class Level2 extends Level {
   }
 
   computePrice(rental, car) {
+      
     const operations = [
       function computeTimeAspect(rental) {
         
@@ -53,8 +54,7 @@ class Level2 extends Level {
       }
     ];
     return operations
-      .reduce((totalPrice, operation) => totalPrice += operation.bind(this)(rental, car), 0);  
+    .map(op => op.bind(this))
+      .reduce((totalPrice, operation) => totalPrice += operation(rental, car), 0);  
   }
 }
-
-module.exports = Level2;

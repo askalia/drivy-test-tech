@@ -3,10 +3,10 @@ const path = require('path');
 const { RentalFlowService } = require('./services');
 const { Report, ReportEntry } = require('./models');
 
-class Level {
+export class Level {
 
     constructor (options = { dataPath: '' }) {
-        this._rentalFlowService = RentalFlowService.getInstance(options.dataPath);
+        this._rentalFlowService = new RentalFlowService(options.dataPath);
         this._report = new Report();
         this._options = options;        
     }
@@ -16,16 +16,16 @@ class Level {
     }
 
     getRentalsReport() {
+        const lev = 'Level2';
         this._rentalFlowService.getRentals().forEach((rental) => {
             const car = this._rentalFlowService.findCarById(rental.car_id);
             let reportEntry = this._report.findEntryById(rental.id);
-            //console.log('reportEntry : ', reportEntry)
             if (car !== undefined) {
                 if (reportEntry === undefined) {
                     reportEntry = ReportEntry.from(rental.id, 0);
                     this._report.addEntry(reportEntry);                    
-                }
-                reportEntry.price = this.computePrice(rental, car);                
+                }        
+                reportEntry.price += this.computePrice(rental, car);                                
             }
         });
         
@@ -44,5 +44,3 @@ class Level {
         
     }
 }
-
-module.exports = Level;

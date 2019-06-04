@@ -1,6 +1,7 @@
 {
     "rentals": [
         {
+            "id": 1,
             "actions": [
                 {
                     "who": "driver",
@@ -25,11 +26,13 @@
                 {
                     "who": "drivy",
                     "type": "credit",
-                    "amount": null
+                    "amount": 350
                 }
-            ]
+            ],
+            "commission": {}
         },
         {
+            "id": 2,
             "actions": [
                 {
                     "who": "driver",
@@ -54,11 +57,13 @@
                 {
                     "who": "drivy",
                     "type": "credit",
-                    "amount": null
+                    "amount": 820
                 }
-            ]
+            ],
+            "commission": {}
         },
         {
+            "id": 3,
             "actions": [
                 {
                     "who": "driver",
@@ -83,9 +88,10 @@
                 {
                     "who": "drivy",
                     "type": "credit",
-                    "amount": null
+                    "amount": 2970
                 }
-            ]
+            ],
+            "commission": {}
         }
     ]
 }

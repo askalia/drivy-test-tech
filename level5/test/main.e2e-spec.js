@@ -1,17 +1,17 @@
 
 require('jasmine');
 const fs = require('fs');
-const Level4 = require('../level4');
+const { Level5 } = require('../level5');
 const path = require('path');
 const rimraf = require('rimraf');
 
-describe('Rentals Level4', () => {
+describe('Rentals Level5', () => {
     
     let level = null; 
     const REPORT_PATH = path.resolve(__dirname + "/data/output.json");
 
     beforeAll(() => {
-        level = new Level4({ dataPath: path.resolve(__dirname + "/../data/input.json") });
+        level = new Level5({ dataPath: path.resolve(__dirname + "/../data/input.json") });
     });
 
     it('should output a report of rentals', (done) => {
@@ -21,9 +21,7 @@ describe('Rentals Level4', () => {
 
         const savedReport = JSON.parse(fs.readFileSync(REPORT_PATH));            
         savedReport.rentals.forEach((rental, idx) => {
-            const expectedRental = expectedRentals[idx];
-            expect(rental.id).toEqual(expectedRental.id),
-            expect(rental.actions).toEqual(expectedRental.actions);
+            expect(rental).toEqual(expectedRentals[idx]);            
         })
         done();
     });

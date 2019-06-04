@@ -1,24 +1,22 @@
-import { RentalFlowService } from '../services';
-
 const moment = require('moment');
 moment.suppressDeprecationWarnings = true;
 
 export class Rental {
  
-    constructor(){
-        this.id;
+    constructor(id, rentalFlowService){
+        this.id = id;
         this.car_id;
         this.start_date;
         this.end_date;
         this.distance;
-        this._rentalFlowService = RentalFlowService.getInstance();
+        this._rentalFlowService = rentalFlowService;
     }
 
-    static from(data){
+    static from(data, rentalFlowService){
         return Object.entries(data).reduce((rental, [prop, value]) => {
-            rental[prop] = value;            
+            rental[prop] = value;
             return rental;
-        }, new Rental());
+        }, new Rental(data.id, rentalFlowService));
     }
 
     get duration() {

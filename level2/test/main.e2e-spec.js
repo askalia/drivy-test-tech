@@ -1,7 +1,7 @@
 
 require('jasmine');
 const fs = require('fs');
-const Level2 = require('../level2');
+const { Level2 } = require('../level2');
 const path = require('path');
 const rimraf = require('rimraf');
 
@@ -21,9 +21,8 @@ describe('Rentals Level2', () => {
         
         const savedReport = JSON.parse(fs.readFileSync(REPORT_PATH));            
         savedReport.rentals.forEach((rental, idx) => {
-            expect(rental.id).toEqual(expectedRentals[idx].id),
-            expect(rental.price).toEqual(expectedRentals[idx].price);
-        })
+            expect(rental).toEqual(expectedRentals[idx]);          
+        });
         done();
     });
 
