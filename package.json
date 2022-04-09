@@ -4,7 +4,7 @@
   "description": "We are building a peer-to-peer car rental service. Let's call it Drivy :)",
   "main": "main.js",
   "dependencies": {
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "percent-value": "^1.0.8",
     "rimraf": "^2.6.3"
   },
